@@ -93,11 +93,14 @@ const moveEnemy = (enemy, speed) => {
 const movePlayer = () => {
     if (cursors.left.isDown) {
         player.ref.x -= player.speed;
-    } else if (cursors.right.isDown) {
+    }
+    if (cursors.right.isDown) {
         player.ref.x += player.speed;
-    } else if (cursors.up.isDown) {
+    }
+    if (cursors.up.isDown) {
         player.ref.y -= player.speed;
-    } else if (cursors.down.isDown) {
+    }
+    if (cursors.down.isDown) {
         player.ref.y += player.speed;
     }
 }
