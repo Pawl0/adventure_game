@@ -19,43 +19,52 @@ let cursors;
 
 let score = 0;
 
+const resetGame = (gameInstance) => {
+    score = 0
+    gameInstance.score.text = score;
+    if (gameInstance.player)
+        gameInstance.player.destroy()
+    if (gameInstance.enemy1)
+        gameInstance.enemy1.destroy()
+    if (gameInstance.treasure)
+        gameInstance.treasure.destroy()
+    gameInstance.player = gameInstance.physics.add.sprite(70, 180, 'player');
+    gameInstance.player.setScale(0.5);
+    gameInstance.treasure = gameInstance.physics.add.sprite(550, 190, 'treasure');
+    gameInstance.treasure.setScale(0.5);
+    gameInstance.enemy1 = gameInstance.physics.add.sprite(250, 180, 'enemy');
+    player.ref = gameInstance.player;
+    gameInstance.physics.add.collider(gameInstance.player, gameInstance.enemy1, (player, enemy) => {
+        player.destroy();
+        gameInstance.gameover = true;
+    });
+
+    gameInstance.physics.add.collider(gameInstance.player, gameInstance.treasure, (player, treasure) => {
+        treasure.destroy();
+        score += 1000;
+        gameInstance.score.text = score;
+    });
+}
+
 // called once after the preload ends
 gameScene.create = function () {
     // create bg sprite
     const bg = this.add.sprite(0, 0, 'background');
     this.add.text(0, 0, 'Score: ', { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
     this.score = this.add.text(50, 0, score, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
-    this.treasure = this.physics.add.sprite(550, 190, 'treasure');
-    this.treasure.setScale(0.5);
 
     // change the origin to the top-left corner
     bg.setOrigin(0, 0);
-
-    // create the player
-    this.player = this.physics.add.sprite(70, 180, 'player');
-
-    // we are reducing the width by 50%, and we are doubling the height
-    this.player.setScale(0.5);
-
-    player.ref = this.player;
-    // create an enemy
-    this.enemy1 = this.physics.add.sprite(250, 180, 'enemy');
+    resetGame(this)
     cursors = this.input.keyboard.createCursorKeys();
     this.input.keyboard.on('keydown', (e) => {
         if (e.key === "Escape") {
             this.paused = !this.paused;
         }
-    });
-
-    this.physics.add.collider(this.player, this.enemy1, (player, enemy) => {
-        player.destroy();
-        // this.gameover = true;
-    });
-
-    this.physics.add.collider(this.player, this.treasure, (player, treasure) => {
-        treasure.destroy();
-        score += 1000;
-        this.score.text = score;
+        console.log(e.key)
+        if (e.key === "Enter") {
+            resetGame(this)
+        }
     });
 };
 
@@ -65,8 +74,11 @@ gameScene.update = function () {
         return;
     }
     if (this.gameover) {
-        alert("Game over");
-        return
+        const restart = confirm("Game over! Do you want to restart?");
+        if (restart) {
+            this.gameover = false;
+            resetGame(this)
+        }
     }
     moveEnemy(this.enemy1, 5);
     movePlayer();
