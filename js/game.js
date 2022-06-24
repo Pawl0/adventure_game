@@ -19,21 +19,30 @@ let cursors;
 
 let score = 0;
 
-const resetGame = (gameInstance) => {
-    score = 0
-    gameInstance.score.text = score;
-    if (gameInstance.player)
-        gameInstance.player.destroy()
-    if (gameInstance.enemy1)
-        gameInstance.enemy1.destroy()
-    if (gameInstance.treasure)
-        gameInstance.treasure.destroy()
+const resetPlayer = (gameInstance) => {
+    gameInstance.player?.destroy()
     gameInstance.player = gameInstance.physics.add.sprite(70, 180, 'player');
     gameInstance.player.setScale(0.5);
+    player.ref = gameInstance.player;
+}
+
+const resetEnemy = (gameInstance) => {
+    gameInstance.enemy1?.destroy()
+    gameInstance.enemy1 = gameInstance.physics.add.sprite(250, 180, 'enemy');
+}
+
+const resetTreasure = (gameInstance) => {
+    gameInstance.treasure?.destroy()
     gameInstance.treasure = gameInstance.physics.add.sprite(550, 190, 'treasure');
     gameInstance.treasure.setScale(0.5);
-    gameInstance.enemy1 = gameInstance.physics.add.sprite(250, 180, 'enemy');
-    player.ref = gameInstance.player;
+}
+
+const resetScore = (gameInstance) => {
+    score = 0
+    gameInstance.score.text = score;
+}
+
+const resetColliders = (gameInstance) => {
     gameInstance.physics.add.collider(gameInstance.player, gameInstance.enemy1, (player, enemy) => {
         player.destroy();
         gameInstance.gameover = true;
@@ -44,6 +53,13 @@ const resetGame = (gameInstance) => {
         score += 1000;
         gameInstance.score.text = score;
     });
+}
+
+const resetGame = (gameInstance) => {
+    resetPlayer(gameInstance);
+    resetTreasure(gameInstance);
+    resetEnemy(gameInstance);
+    resetColliders(gameInstance);
 }
 
 // called once after the preload ends
